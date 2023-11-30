@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import net.breez.hermes.android.ui.theme.Typography
 
 @Composable
 fun MyApplicationTheme(
@@ -33,13 +34,6 @@ fun MyApplicationTheme(
             tertiary = Color(0xFF3700B3)
         )
     }
-    val typography = Typography(
-        bodyMedium = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
-        )
-    )
     val shapes = Shapes(
         small = RoundedCornerShape(4.dp),
         medium = RoundedCornerShape(4.dp),
@@ -48,7 +42,7 @@ fun MyApplicationTheme(
 
     MaterialTheme(
         colorScheme = colors,
-        typography = typography,
+        typography = Typography,
         shapes = shapes,
         content = content
     )
