@@ -2,6 +2,7 @@ package net.breez.hermes.android.ui.screen.signin
 
 import net.breez.hermes.android.model.SnackbarOptions
 import net.breez.hermes.android.model.toSOR
+import net.breez.hermes.android.mvi.redux.OneShotEvent
 import net.breez.hermes.android.mvi.redux.Reducer
 import net.breez.hermes.android.mvi.redux.ReducerResult
 import net.breez.hermes.android.mvi.redux.ToastEventData
@@ -19,10 +20,15 @@ class PhoneInputReducer : Reducer<PhoneInputState, PhoneInputAction> {
             is PhoneInputAction.SubmitPhoneAndPassword -> submitPhoneAndPassword(currentState)
             is PhoneInputAction.SignInConfirmed -> onSignInConfirmed(currentState, action)
             is PhoneInputAction.SignInFailed -> onSignInFailed(currentState, action)
-            is PhoneInputAction.UserCloseBottomSheet -> onUserCloseBottomSheet(currentState)
+            is PhoneInputAction.OnCaptchaCompleted -> onCaptchaCompleted(currentState, action)
+            is PhoneInputAction.LoadCaptchaSucceed -> {
+                ReducerResult(currentState.copy(captchaModel = action.element))
+            }
+
             is PhoneInputAction.FetchingCaptchaFailed -> {
                 ReducerResult(currentState)
             }
+
             is PhoneInputAction.FetchingCaptchaSucceeded -> ReducerResult(
                 currentState.copy(
                     captchaModel = action.captchaModel
@@ -31,20 +37,32 @@ class PhoneInputReducer : Reducer<PhoneInputState, PhoneInputAction> {
         }
     }
 
-    private fun onUserCloseBottomSheet(currentState: PhoneInputState): ReducerResult<PhoneInputState> {
+    private fun onCaptchaCompleted(
+        currentState: PhoneInputState,
+        action: PhoneInputAction.OnCaptchaCompleted
+    ): ReducerResult<PhoneInputState> {
         return ReducerResult(
-            currentState.copy(showCountrySelectDialog = false)
+            currentState.copy(showCaptchaInputBottomSheet = false, captchaModel = action.model)
         )
     }
 
     private fun submitPhoneAndPassword(
         currentState: PhoneInputState
     ): ReducerResult<PhoneInputState> {
-        return ReducerResult(
-            currentState.copy(
-                showCaptchaInputBottomSheet = true
+        return if (currentState.captchaModel == null) {
+            return ReducerResult(
+                currentState.copy(
+                    showCaptchaInputBottomSheet = false
+                ),
+                oneShotEvents = arrayOf(SnackbarOptions("Не удалось загрузить каптчу. Попробуйте позже").toOneShotEvent())
             )
-        )
+        } else {
+            ReducerResult(
+                currentState.copy(
+                    showCaptchaInputBottomSheet = true
+                )
+            )
+        }
     }
 
     private fun onUserWantChangedCountry(

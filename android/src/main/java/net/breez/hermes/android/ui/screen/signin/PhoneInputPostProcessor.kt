@@ -9,6 +9,8 @@ class PhoneInputPostProcessor :
         return when(event) {
             is RegistrationEvent.FailedSignIn -> PhoneInputAction.SignInFailed(event.throwable)
             is RegistrationEvent.SuccessSignIn -> PhoneInputAction.SignInConfirmed(event.profileModel)
+            is RegistrationEvent.FailedLoadCaptcha -> TODO()
+            is RegistrationEvent.LoadCaptchaCompleted -> TODO()
         }
     }
 }

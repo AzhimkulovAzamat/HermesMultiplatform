@@ -47,7 +47,7 @@ import net.breez.hermes.android.ui.custom.CustomSnackbar
 import net.breez.hermes.android.ui.custom.ImageView
 import net.breez.hermes.android.ui.custom.PhoneInputView
 import net.breez.hermes.android.ui.screen.extensions.collectAsEffect
-import net.breez.hermes.android.ui.screen.signin.modal.CaptchaInputBottomSheet
+import net.breez.hermes.android.ui.screen.signin.modal.captcha.CaptchaInputBottomSheet
 import net.breez.hermes.android.ui.theme.*
 
 @ExperimentalMaterial3Api
@@ -62,17 +62,19 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
 
     val sheetState = rememberModalBottomSheetState()
 
-    ComposableLifecycle(viewModel) { state ->
+    ComposableLifecycle(viewModel) { states ->
+        val currentState = states.current
 
-        if (state.showCaptchaInputBottomSheet) {
+        if (currentState.showCaptchaInputBottomSheet) {
             CaptchaInputBottomSheet(
-                value = "state.ca"
+                initialCaptcha = currentState.captchaModel!!,
+                onCaptchaCompleted = { viewModel.sendAction(PhoneInputAction.OnCaptchaCompleted(it)) }
             )
         }
 
-        if (state.showCountrySelectDialog) {
+        if (currentState.showCountrySelectDialog) {
             ModalBottomSheet(onDismissRequest = {
-                viewModel.sendAction(PhoneInputAction.UserCloseBottomSheet)
+                viewModel.sendAction(PhoneInputAction.ShowCountryOptions)
             }, sheetState = sheetState) {
                 Column {
                     Row(
@@ -166,7 +168,7 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
                         .constrainAs(phoneInput) {
                             top.linkTo(mascot.bottom)
                         },
-                    state.phoneNumber,
+                    currentState.phoneNumber,
                     onUserWantChangeCountry = {
                         viewModel.sendAction(PhoneInputAction.ShowCountryOptions)
                     }
@@ -174,7 +176,7 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
                     viewModel.sendAction(PhoneInputAction.PhoneNumberInserted(it))
                 }
                 BasicTextField(
-                    value = state.password,
+                    value = currentState.password,
                     onValueChange = { viewModel.sendAction(PhoneInputAction.PasswordInserted(it)) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -194,7 +196,7 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
                         Box(
                             contentAlignment = Alignment.Center
                         ) {
-                            if (state.password.isEmpty())
+                            if (currentState.password.isEmpty())
                                 Text(
                                     text = "Пароль",
                                     color = HintColor,
@@ -209,7 +211,7 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
 
                 Button(
                     onClick = { viewModel.sendAction(PhoneInputAction.SubmitPhoneAndPassword) },
-                    enabled = !state.isLoading,
+                    enabled = !currentState.isLoading,
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
                     modifier = Modifier
                         .constrainAs(submitButton) {
@@ -246,7 +248,6 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
                         }
 
                         is OneShotEvent.Navigation -> {}
-
                         else -> {}
                     }
                 }
@@ -261,7 +262,7 @@ fun SignInScreen(viewModel: SignInViewModel? = null) {
                 }
             }
 
-            if (state.isLoading) {
+            if (currentState.isLoading) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,

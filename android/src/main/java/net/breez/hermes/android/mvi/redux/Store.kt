@@ -16,16 +16,28 @@ open class Store<S : State, A : StateAction>(
     private val postProcessors: PostProcessorContainer? = null
 ) {
 
-    private val _state = MutableStateFlow(initialState)
+    private val _state = MutableStateFlow(States(initialState, initialState))
     private val _viewEffect = MutableSharedFlow<OneShotEvent?>()
-    val state: StateFlow<S> = _state
+    val state: StateFlow<States<S>> = _state
     val viewEffect: SharedFlow<OneShotEvent?> = _viewEffect.asSharedFlow()
 
     private val currentState: S
-        get() = _state.value
+        get() = _state.value.current
 
-    suspend fun loadData() {
-        bootstrapper?.viewDidLoad {
+    suspend fun viewCreated() {
+        bootstrapper?.viewCreated {
+            dispatch(it)
+        }
+    }
+
+    suspend fun viewResumed() {
+        bootstrapper?.viewResumed {
+            dispatch(it)
+        }
+    }
+
+    suspend fun viewReload() {
+        bootstrapper?.viewReload {
             dispatch(it)
         }
     }
@@ -38,7 +50,7 @@ open class Store<S : State, A : StateAction>(
             logger.log(castedState)
         }
 
-        _state.value = reducerResult.state
+        _state.value = _state.value.updateState(reducerResult.state)
         reducerResult.oneShotEvents.forEach {
             _viewEffect.emit(it)
         }

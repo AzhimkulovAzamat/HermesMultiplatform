@@ -8,15 +8,17 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import net.breez.hermes.android.mvi.redux.State
+import net.breez.hermes.android.mvi.redux.StateAction
+import net.breez.hermes.android.mvi.redux.States
 import net.breez.hermes.android.mvi.viewmodel.BaseViewModel
 
 @Composable
-fun <S : State> ComposableLifecycle(
-    viewModel: BaseViewModel<S>,
+fun <S : State, A: StateAction> ComposableLifecycle(
+    viewModel: BaseViewModel<S, A>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    content: @Composable (S) -> Unit
+    content: @Composable (States<S>) -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val states by viewModel.state.collectAsState()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -29,5 +31,5 @@ fun <S : State> ComposableLifecycle(
         }
     }
 
-    content(state)
+    content(states)
 }

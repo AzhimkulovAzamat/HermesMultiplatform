@@ -19,7 +19,7 @@ class SignInViewModel constructor(
     private val phoneInputPostProcessor: PhoneInputPostProcessor,
     phoneInputBootstrapper: PhoneInputBootstrapper,
     reducer: PhoneInputReducer
-): BaseViewModel<PhoneInputState>() {
+): BaseViewModel<PhoneInputState, PhoneInputAction>() {
 
     private val signInMiddlewares = object : MiddlewareContainer {
         override suspend fun process(command: Command): Event {
@@ -49,14 +49,8 @@ class SignInViewModel constructor(
     )
 
     override val state = store.state
-    val viewEffect = store.viewEffect
-
-    override fun onCreate() {
-        super.onCreate()
-        viewModelScope.launch {
-            store.loadData()
-        }
-    }
+    override val viewEffect = store.viewEffect
+    override fun provideStore(): Store<PhoneInputState, PhoneInputAction> = store
 
     fun sendAction(action: PhoneInputAction) {
         viewModelScope.launch {

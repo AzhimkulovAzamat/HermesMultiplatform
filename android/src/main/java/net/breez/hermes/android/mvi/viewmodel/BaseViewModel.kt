@@ -2,15 +2,27 @@ package net.breez.hermes.android.mvi.viewmodel
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import net.breez.hermes.android.mvi.redux.OneShotEvent
 import net.breez.hermes.android.mvi.redux.State
+import net.breez.hermes.android.mvi.redux.StateAction
+import net.breez.hermes.android.mvi.redux.States
+import net.breez.hermes.android.mvi.redux.Store
 
-abstract class BaseViewModel<S: State>: ViewModel() {
+abstract class BaseViewModel<S: State, A: StateAction>: ViewModel() {
 
-    abstract val state: StateFlow<S>
+    abstract val state: StateFlow<States<S>>
+    abstract val viewEffect: SharedFlow<OneShotEvent?>
+
+    abstract fun provideStore(): Store<S, A>
 
     open fun onCreate() {
-        //intentionally left empty
+        viewModelScope.launch {
+            provideStore().viewCreated()
+        }
     }
 
     open fun onStart() {
@@ -18,7 +30,9 @@ abstract class BaseViewModel<S: State>: ViewModel() {
     }
 
     open fun onResume() {
-        //intentionally left empty
+        viewModelScope.launch {
+            provideStore().viewResumed()
+        }
     }
 
     open fun onPause() {
@@ -26,7 +40,7 @@ abstract class BaseViewModel<S: State>: ViewModel() {
     }
 
     open fun onStop() {
-
+        //intentionally left empty
     }
 
     open fun onDestroy() {

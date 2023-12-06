@@ -2,6 +2,7 @@ package net.breez.hermes.android.mvi.redux
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 
 interface Logger {
 
@@ -53,5 +54,5 @@ class LoggerImpl : Logger {
 }
 
 interface LogEvent {
-    fun toJson(): String = Gson().toJson(this)
+    fun toJson(): String = GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(this)
 }

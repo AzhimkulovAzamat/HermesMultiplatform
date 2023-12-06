@@ -15,5 +15,6 @@ sealed class PhoneInputAction : StateAction {
     class SignInFailed(val throwable: Throwable) : PhoneInputAction()
     class FetchingCaptchaSucceeded(val captchaModel: CaptchaModel): PhoneInputAction()
     class FetchingCaptchaFailed(val throwable: Throwable): PhoneInputAction()
-    data object UserCloseBottomSheet: PhoneInputAction()
+    class OnCaptchaCompleted(val model: CaptchaModel?) : PhoneInputAction()
+    class LoadCaptchaSucceed(val element: CaptchaModel) : PhoneInputAction()
 }

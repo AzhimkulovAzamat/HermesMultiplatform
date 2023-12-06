@@ -51,4 +51,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.koin.android)
     testImplementation(libs.koin.test.junit4)
+    implementation (libs.koin.androidx.compose)
+    implementation(libs.coil.compose)
 }

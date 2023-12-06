@@ -9,6 +9,7 @@ sealed class OneShotEvent: LogEvent {
     class ShowSnackBar(val snackbarOptions: SnackbarOptions) : OneShotEvent()
     class ShowToast(val toast: ToastEventData) : OneShotEvent()
     data object Navigation : OneShotEvent()
+    data object FinishScreen: OneShotEvent()
 }
 
 class ToastEventData(
