@@ -32,6 +32,8 @@ abstract class BaseViewModel<S: State, A: StateAction>: ViewModel() {
     open fun onResume() {
         viewModelScope.launch {
             provideStore().viewResumed()
+
+
         }
     }
 

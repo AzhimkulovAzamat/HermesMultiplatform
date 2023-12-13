@@ -7,6 +7,7 @@ import net.breez.hermes.android.middleware.RegistrationEvent
 import net.breez.hermes.android.middleware.RegistrationMiddleWare
 import net.breez.hermes.android.mvi.redux.Command
 import net.breez.hermes.android.mvi.redux.Event
+import net.breez.hermes.android.mvi.redux.Logger
 import net.breez.hermes.android.mvi.redux.LoggerImpl
 import net.breez.hermes.android.mvi.redux.MiddlewareContainer
 import net.breez.hermes.android.mvi.redux.PostProcessorContainer
@@ -18,7 +19,8 @@ class SignInViewModel constructor(
     private val registrationMiddleWare: RegistrationMiddleWare,
     private val phoneInputPostProcessor: PhoneInputPostProcessor,
     phoneInputBootstrapper: PhoneInputBootstrapper,
-    reducer: PhoneInputReducer
+    reducer: PhoneInputReducer,
+    logger: Logger
 ): BaseViewModel<PhoneInputState, PhoneInputAction>() {
 
     private val signInMiddlewares = object : MiddlewareContainer {
@@ -42,7 +44,7 @@ class SignInViewModel constructor(
     private val store = Store(
         initialState = PhoneInputState(),
         reducer = reducer,
-        logger = LoggerImpl(),
+        logger = logger,
         bootstrapper = phoneInputBootstrapper,
         middlewares = signInMiddlewares,
         postProcessors = signInPostProcessor

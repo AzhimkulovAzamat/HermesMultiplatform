@@ -4,7 +4,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarVisuals
 import net.breez.hermes.android.mvi.redux.OneShotEvent
 
-class SnackbarOptions(
+data class SnackbarOptions(
     override val message: String,
     val icon: Int = androidx.core.R.drawable.ic_call_answer,
     private val actionIcon: Int? = androidx.core.R.drawable.ic_call_answer_low,

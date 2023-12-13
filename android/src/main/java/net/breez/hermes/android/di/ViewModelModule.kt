@@ -7,6 +7,7 @@ import net.breez.hermes.android.ui.screen.signin.PhoneInputBootstrapper
 import net.breez.hermes.android.ui.screen.signin.PhoneInputPostProcessor
 import net.breez.hermes.android.ui.screen.signin.PhoneInputReducer
 import net.breez.hermes.android.ui.screen.signin.SignInViewModel
+import net.breez.hermes.android.ui.screen.signin.modal.captcha.CaptchaInputPostProcessor
 import net.breez.hermes.android.ui.screen.signin.modal.captcha.CaptchaInputReducer
 import net.breez.hermes.android.ui.screen.signin.modal.captcha.CaptchaInputViewModel
 import net.breez.hermes.data.di.sharedModule
@@ -24,7 +25,8 @@ val viewModelModules = module {
     singleOf(::PhoneInputPostProcessor)
     singleOf(::RegistrationMiddleWare)
     singleOf(::CaptchaInputReducer)
+    singleOf(::CaptchaInputPostProcessor)
 
     viewModelOf(::SignInViewModel)
-    viewModel { CaptchaInputViewModel(it.get(), get(), get()) }
+    viewModel { CaptchaInputViewModel(it.get(), get(), get(), get(), get()) }
 }

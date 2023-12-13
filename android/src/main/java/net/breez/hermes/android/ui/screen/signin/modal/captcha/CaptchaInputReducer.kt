@@ -1,6 +1,7 @@
 package net.breez.hermes.android.ui.screen.signin.modal.captcha
 
 import net.breez.hermes.android.middleware.RegistrationCommand
+import net.breez.hermes.android.model.SnackbarOptions
 import net.breez.hermes.android.mvi.redux.OneShotEvent
 import net.breez.hermes.android.mvi.redux.Reducer
 import net.breez.hermes.android.mvi.redux.ReducerResult
@@ -19,6 +20,14 @@ class CaptchaInputReducer : Reducer<CaptchaInputState, CaptchaInputAction> {
             }
             CaptchaInputAction.LoadNewCaptcha -> {
                 ReducerResult(currentState, command = RegistrationCommand.LoadNewCaptcha)
+            }
+            is CaptchaInputAction.LoadNewCaptchaFailed -> {
+                ReducerResult(currentState, oneShotEvents = arrayOf(SnackbarOptions("Не удалось загрузить каптчу").toOneShotEvent()))
+            }
+            is CaptchaInputAction.LoadNewCaptchaSucceed -> {
+                ReducerResult(currentState.copy(
+                    captcha = action.element
+                ))
             }
         }
     }

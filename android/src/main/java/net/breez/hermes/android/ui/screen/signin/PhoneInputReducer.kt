@@ -1,5 +1,6 @@
 package net.breez.hermes.android.ui.screen.signin
 
+import net.breez.hermes.android.middleware.RegistrationCommand
 import net.breez.hermes.android.model.SnackbarOptions
 import net.breez.hermes.android.model.toSOR
 import net.breez.hermes.android.mvi.redux.OneShotEvent
@@ -42,7 +43,8 @@ class PhoneInputReducer : Reducer<PhoneInputState, PhoneInputAction> {
         action: PhoneInputAction.OnCaptchaCompleted
     ): ReducerResult<PhoneInputState> {
         return ReducerResult(
-            currentState.copy(showCaptchaInputBottomSheet = false, captchaModel = action.model)
+            currentState.copy(showCaptchaInputBottomSheet = false, captchaModel = action.model, ),
+            command = RegistrationCommand.SignIn(currentState.phoneNumber, currentState.password)
         )
     }
 

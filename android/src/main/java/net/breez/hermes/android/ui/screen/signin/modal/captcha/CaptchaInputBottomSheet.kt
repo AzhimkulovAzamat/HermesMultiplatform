@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import net.breez.hermes.android.R
 import net.breez.hermes.android.model.toSOR
@@ -51,7 +50,7 @@ import org.koin.core.parameter.parametersOf
 fun CaptchaInputBottomSheet(
     modifier: Modifier = Modifier,
     initialCaptcha: CaptchaModel = CaptchaModel.empty(),
-    onCaptchaCompleted: (CaptchaModel?) -> Unit = {},
+    onCaptchaCompleted: (CaptchaModel) -> Unit = {},
 ) {
     val viewModel: CaptchaInputViewModel = koinViewModel { parametersOf(initialCaptcha) }
     val sheetState = rememberModalBottomSheetState()
@@ -59,22 +58,21 @@ fun CaptchaInputBottomSheet(
 
     val title = context.getString(R.string.title_captchaBottomSheet)
 
-    viewModel.viewEffect.collectAsEffect { effect ->
-        when (effect) {
-            OneShotEvent.FinishScreen -> {
-                onCaptchaCompleted(null)
-            }
-
-            else -> {
-                //TODO: Handle other events
-            }
-        }
-    }
-
     ComposableLifecycle(viewModel = viewModel) { states ->
         val currentState = states.current
 
         val painter = rememberAsyncImagePainter(currentState.captcha.image)
+
+        viewModel.viewEffect.collectAsEffect { effect ->
+            when (effect) {
+                OneShotEvent.FinishScreen -> {
+                    onCaptchaCompleted(currentState.captcha)
+                }
+                else -> {
+                    TODO("Handle other events")
+                }
+            }
+        }
 
         ModalBottomSheet(
             modifier = modifier.fillMaxHeight(),

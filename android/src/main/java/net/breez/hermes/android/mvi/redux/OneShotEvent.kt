@@ -12,7 +12,7 @@ sealed class OneShotEvent: LogEvent {
     data object FinishScreen: OneShotEvent()
 }
 
-class ToastEventData(
+data class ToastEventData(
     val message: StringOrResource,
     @IntRange(
         Toast.LENGTH_SHORT.toLong(),

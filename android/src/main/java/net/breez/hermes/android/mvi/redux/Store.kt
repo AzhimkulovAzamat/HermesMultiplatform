@@ -16,7 +16,7 @@ open class Store<S : State, A : StateAction>(
     private val postProcessors: PostProcessorContainer? = null
 ) {
 
-    private val _state = MutableStateFlow(States(initialState, initialState))
+    private val _state = MutableStateFlow(States(null, initialState))
     private val _viewEffect = MutableSharedFlow<OneShotEvent?>()
     val state: StateFlow<States<S>> = _state
     val viewEffect: SharedFlow<OneShotEvent?> = _viewEffect.asSharedFlow()
@@ -49,6 +49,10 @@ open class Store<S : State, A : StateAction>(
         (reducerResult.state as? State)?.let { castedState ->
             logger.log(castedState)
         }
+        reducerResult.oneShotEvents.forEach { event ->
+            logger.log(event)
+        }
+        logger.log(reducerResult.command)
 
         _state.value = _state.value.updateState(reducerResult.state)
         reducerResult.oneShotEvents.forEach {
